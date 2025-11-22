@@ -8,6 +8,7 @@
 #include <errno.h> // Error integer and strerror() function
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
+#include <stdlib.h> // for heap memory
 
 typedef struct uart_module uart_module_t;
 
@@ -19,6 +20,10 @@ typedef enum uart_module_status {
     UART_MODULE_OK = 0,
 
 }uart_module_status_t;
+
+typedef enum uart_buadrate_speed {
+
+}uart_buadrate_speed_t;
 
 uart_module_t* uart_module_init(uart_module_config_t* cfg);
 
