@@ -34,3 +34,28 @@ uart_module_t* uart_module_init(uart_module_config_t* cfg) {
     err:
         return NULL;
 }
+
+uart_module_status_t set_parity(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_cflag |= PARENB;
+    } else {
+        cfx->m_termios.c_cflag &= ~PARENB;
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_cflag |= CSTOP;
+    } else {
+        cfx->m_termios.c_cflag &= ~CSTOP;
+    }
+    return UART_MODULE_OK;
+}
+

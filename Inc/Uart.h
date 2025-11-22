@@ -9,6 +9,8 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 #include <stdlib.h> // for heap memory
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct uart_module uart_module_t;
 
@@ -18,6 +20,7 @@ typedef struct uart_module_config {
 
 typedef enum uart_module_status {
     UART_MODULE_OK = 0,
+    UART_MODULE_ARG_NULL_ERROR
 
 }uart_module_status_t;
 
@@ -26,6 +29,10 @@ typedef enum uart_buadrate_speed {
 }uart_buadrate_speed_t;
 
 uart_module_t* uart_module_init(uart_module_config_t* cfg);
+
+uart_module_status_t set_parity(uart_module_t* cfx, bool state);
+
+uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_destroy(uart_module_t* cfx);
 
