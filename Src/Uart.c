@@ -59,3 +59,62 @@ uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state) {
     return UART_MODULE_OK;
 }
 
+uart_module_status_t set_number_of_bits_(uart_module_t* cfx, uart_bits_per_byte_t state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    switch (state) {
+        case FIVE_BITS:
+            cfx->m_termios.c_cflag |= CS5;
+            break;
+        case SIX_BITS:
+            cfx->m_termios.c_cflag |= CS6;
+            break;
+        case SEVEN_BITS:
+            cfx->m_termios.c_cflag |= CS7;
+            break;
+        case EIGHT_BITS:
+            cfx->m_termios.c_cflag |= CS8;
+            break;
+        case CLEAR_ALL:
+            cfx->m_termios.c_cflag &= ~CSIZE;
+            break;
+        default:
+            //LOG UNKNOW
+            break;
+    }
+
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t hardware_flow_control(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_cflag |= CRTSCTS;
+    } else {
+        cfx->m_termios.c_cflag &= ~CRTSCTS;
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_destroy(uart_module_t* cfx) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    free(cfx);
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t canonical_mode(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_lflag |= ICANON;
+    } else {
+        cfx->m_termios.c_lflag &= ~ICANON;
+    }
+    return UART_MODULE_OK;
+}

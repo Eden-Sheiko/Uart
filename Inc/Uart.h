@@ -12,10 +12,23 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef enum uart_buadrate_speed {
+    some_param,
+}uart_buadrate_speed_t;
+
+typedef enum uart_bits_per_byte {
+    FIVE_BITS =     1U,
+    SIX_BITS,
+    SEVEN_BITS,
+    EIGHT_BITS,
+    CLEAR_ALL
+}uart_bits_per_byte_t;
+
 typedef struct uart_module uart_module_t;
 
 typedef struct uart_module_config {
     const char*             path;
+    uart_bits_per_byte_t    bits;
 }uart_module_config_t;
 
 typedef enum uart_module_status {
@@ -24,15 +37,18 @@ typedef enum uart_module_status {
 
 }uart_module_status_t;
 
-typedef enum uart_buadrate_speed {
-
-}uart_buadrate_speed_t;
 
 uart_module_t* uart_module_init(uart_module_config_t* cfg);
 
 uart_module_status_t set_parity(uart_module_t* cfx, bool state);
 
 uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state);
+
+uart_module_status_t set_number_of_bits_(uart_module_t* cfx, uart_bits_per_byte_t state);
+
+uart_module_status_t hardware_flow_control(uart_module_t* cfx, bool state);
+
+uart_module_status_t canonical_mode(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_destroy(uart_module_t* cfx);
 
