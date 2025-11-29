@@ -70,6 +70,8 @@ uart_module_t* uart_module_init(uart_module_config_t* cfg);
 
 uart_module_status_t uart_module_user_config(uart_module_t* cfx, uart_module_config_t* cfg);
 
+uart_module_status_t uart_module_apply(uart_module_t* cfx);
+
 uart_module_status_t uart_module_set_parity(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_set_stop_bit(uart_module_t* cfx, bool state);
@@ -95,6 +97,13 @@ uart_module_status_t uart_module_special_handling(uart_module_t* cfx, bool state
 uart_module_status_t uart_module_output_modes(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_vmin_vtime(uart_module_t* cfx, uint8_t vmin, uint8_t vtime);
+
+
+
+//read and write
+size_t uart_read(uart_module_t* handle, uint8_t* data, size_t length);
+
+size_t uart_write(uart_module_t* handle, uint8_t* data, size_t length);
 
 
 

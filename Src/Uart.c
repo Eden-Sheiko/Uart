@@ -132,6 +132,7 @@ uart_module_status_t uart_module_destroy(uart_module_t* cfx) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
+    close(cfx->fd);
     free(cfx);
     return UART_MODULE_OK;
 }
