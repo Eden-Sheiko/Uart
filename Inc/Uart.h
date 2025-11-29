@@ -44,13 +44,24 @@ uart_module_status_t set_parity(uart_module_t* cfx, bool state);
 
 uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state);
 
-uart_module_status_t set_number_of_bits_(uart_module_t* cfx, uart_bits_per_byte_t state);
+uart_module_status_t set_number_of_bits(uart_module_t* cfx, uart_bits_per_byte_t state);
 
 uart_module_status_t hardware_flow_control(uart_module_t* cfx, bool state);
 
 uart_module_status_t canonical_mode(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_destroy(uart_module_t* cfx);
+
+uart_module_status_t uart_module_echo(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_signal_chars(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_software_flow_control(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_special_handling(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_output_modes(uart_module_t* cfx, bool state);
+
 
 
 #endif //UARTWRAPPERLINUX_UART_H

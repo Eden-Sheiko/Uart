@@ -59,7 +59,7 @@ uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state) {
     return UART_MODULE_OK;
 }
 
-uart_module_status_t set_number_of_bits_(uart_module_t* cfx, uart_bits_per_byte_t state) {
+uart_module_status_t set_number_of_bits(uart_module_t* cfx, uart_bits_per_byte_t state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -118,3 +118,72 @@ uart_module_status_t canonical_mode(uart_module_t* cfx, bool state) {
     }
     return UART_MODULE_OK;
 }
+
+uart_module_status_t uart_module_echo(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_lflag |= ECHO;
+        cfx->m_termios.c_lflag |= ECHOE;
+        cfx->m_termios.c_lflag |= ECHONL;
+    } else {
+        cfx->m_termios.c_lflag &= ~ECHO;
+        cfx->m_termios.c_lflag &= ~ECHOE;
+        cfx->m_termios.c_lflag &= ~ECHONL;
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_signal_chars(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_lflag |= ISIG;
+
+    } else {
+        cfx->m_termios.c_lflag &= ~ISIG;
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_software_flow_control(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_lflag |= IXON | IXOFF | IXANY;
+
+    } else {
+        cfx->m_termios.c_lflag &= ~(IXON | IXOFF | IXANY);
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_special_handling(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_lflag |= IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL;
+    } else {
+        cfx->m_termios.c_lflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
+    }
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_output_modes(uart_module_t* cfx, bool state) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    if (state) {
+        cfx->m_termios.c_oflag |= OPOST;
+        cfx->m_termios.c_oflag |= ONLCR;
+    } else {
+        cfx->m_termios.c_oflag &= ~OPOST;
+        cfx->m_termios.c_oflag &= ~ONLCR;
+    }
+    return UART_MODULE_OK;
+}
+
