@@ -12,9 +12,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum uart_buadrate_speed {
-    some_param,
-}uart_buadrate_speed_t;
+typedef enum uart_baudrate {
+    UART_BAUD_0       = B0,
+    UART_BAUD_50      = B50,
+    UART_BAUD_75      = B75,
+    UART_BAUD_110     = B110,
+    UART_BAUD_134     = B134,
+    UART_BAUD_150     = B150,
+    UART_BAUD_200     = B200,
+    UART_BAUD_300     = B300,
+    UART_BAUD_600     = B600,
+    UART_BAUD_1200    = B1200,
+    UART_BAUD_1800    = B1800,
+    UART_BAUD_2400    = B2400,
+    UART_BAUD_4800    = B4800,
+    UART_BAUD_9600    = B9600,
+    UART_BAUD_19200   = B19200,
+    UART_BAUD_38400   = B38400,
+    UART_BAUD_57600   = B57600,
+    UART_BAUD_115200  = B115200,
+    UART_BAUD_230400  = B230400,
+    UART_BAUD_460800  = B460800
+} uart_baudrate_t;
 
 typedef enum uart_bits_per_byte {
     FIVE_BITS =     1U,
@@ -28,27 +47,40 @@ typedef struct uart_module uart_module_t;
 
 typedef struct uart_module_config {
     const char*             path;
-    uart_bits_per_byte_t    bits;
+    uart_baudrate_t         baudrate;
+    uart_bits_per_byte_t    bits_per_byte;
+    bool                    stop_bit;
+    bool                    parity_bit;
+    bool                    flow_control;
+    uint8_t                 timeout;
 }uart_module_config_t;
 
 typedef enum uart_module_status {
     UART_MODULE_OK = 0,
-    UART_MODULE_ARG_NULL_ERROR
+    UART_MODULE_ARG_NULL_ERROR,
+    UART_MODULE_WRONG_ARG_ERROR,
+    UART_MOUDLE_SETTING_BAUD_ERROR,
+    UART_MODULE_APPLY_SETTINGS_ERROR,
+    UART_MODULE_ERROR
 
 }uart_module_status_t;
 
 
 uart_module_t* uart_module_init(uart_module_config_t* cfg);
 
-uart_module_status_t set_parity(uart_module_t* cfx, bool state);
+uart_module_status_t uart_module_user_config(uart_module_t* cfx, uart_module_config_t* cfg);
 
-uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state);
+uart_module_status_t uart_module_set_parity(uart_module_t* cfx, bool state);
 
-uart_module_status_t set_number_of_bits(uart_module_t* cfx, uart_bits_per_byte_t state);
+uart_module_status_t uart_module_set_stop_bit(uart_module_t* cfx, bool state);
 
-uart_module_status_t hardware_flow_control(uart_module_t* cfx, bool state);
+uart_module_status_t uart_module_set_baudrate(uart_module_t* cfx, uart_baudrate_t baud);
 
-uart_module_status_t canonical_mode(uart_module_t* cfx, bool state);
+uart_module_status_t uart_module_set_bits_per_byte(uart_module_t* cfx, uart_bits_per_byte_t state);
+
+uart_module_status_t uart_module_hardware_flow_control(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_canonical_mode(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_destroy(uart_module_t* cfx);
 
@@ -61,6 +93,8 @@ uart_module_status_t uart_module_software_flow_control(uart_module_t* cfx, bool 
 uart_module_status_t uart_module_special_handling(uart_module_t* cfx, bool state);
 
 uart_module_status_t uart_module_output_modes(uart_module_t* cfx, bool state);
+
+uart_module_status_t uart_module_vmin_vtime(uart_module_t* cfx, uint8_t vmin, uint8_t vtime);
 
 
 

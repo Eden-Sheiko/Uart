@@ -3,6 +3,8 @@
 struct uart_module {
     int             fd;
     struct termios  m_termios;
+    uart_baudrate_t output_buadrate;
+    uart_baudrate_t input_buadrate;
 };
 
 uart_module_t* uart_module_init(uart_module_config_t* cfg) {
@@ -23,6 +25,10 @@ uart_module_t* uart_module_init(uart_module_config_t* cfg) {
             /* log error */
             goto err_clean;
         }
+        if (tcgetattr(handle->fd, &handle->m_termios) != 0) {
+            /* log error */
+            goto err_close_fd;
+        }
         return handle;
     }
 
@@ -30,12 +36,35 @@ uart_module_t* uart_module_init(uart_module_config_t* cfg) {
     err_clean:
         free(handle);
         return NULL;
+    err_close_fd:
+        close(handle->fd);
+        free(handle);
+        return NULL;
 
     err:
         return NULL;
 }
 
-uart_module_status_t set_parity(uart_module_t* cfx, bool state) {
+
+uart_module_status_t uart_module_user_config(uart_module_t* cfx, uart_module_config_t* cfg) {
+    if (cfx == NULL || cfg == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    uart_module_set_baudrate(cfx, cfg->baudrate);
+    uart_module_set_bits_per_byte(cfx, cfg->bits_per_byte);
+    uart_module_set_stop_bit(cfx, cfg->stop_bit);
+    uart_module_set_parity(cfx, cfg->parity_bit);
+    uart_module_hardware_flow_control(cfx, cfg->flow_control);
+    uart_module_vmin_vtime(cfx, 0 ,cfg->timeout);
+
+    if (tcsetattr(cfx->fd, TCSANOW, &cfx->m_termios) != 0) {
+        return UART_MODULE_APPLY_SETTINGS_ERROR;
+    }
+
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_set_parity(uart_module_t* cfx, bool state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -47,7 +76,7 @@ uart_module_status_t set_parity(uart_module_t* cfx, bool state) {
     return UART_MODULE_OK;
 }
 
-uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state) {
+uart_module_status_t uart_module_set_stop_bit(uart_module_t* cfx, bool state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -59,7 +88,7 @@ uart_module_status_t set_stop_bit(uart_module_t* cfx, bool state) {
     return UART_MODULE_OK;
 }
 
-uart_module_status_t set_number_of_bits(uart_module_t* cfx, uart_bits_per_byte_t state) {
+uart_module_status_t uart_module_set_bits_per_byte(uart_module_t* cfx, uart_bits_per_byte_t state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -80,14 +109,14 @@ uart_module_status_t set_number_of_bits(uart_module_t* cfx, uart_bits_per_byte_t
             cfx->m_termios.c_cflag &= ~CSIZE;
             break;
         default:
-            //LOG UNKNOW
+            return UART_MODULE_WRONG_ARG_ERROR;
             break;
     }
 
     return UART_MODULE_OK;
 }
 
-uart_module_status_t hardware_flow_control(uart_module_t* cfx, bool state) {
+uart_module_status_t uart_module_hardware_flow_control(uart_module_t* cfx, bool state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -107,7 +136,7 @@ uart_module_status_t uart_module_destroy(uart_module_t* cfx) {
     return UART_MODULE_OK;
 }
 
-uart_module_status_t canonical_mode(uart_module_t* cfx, bool state) {
+uart_module_status_t uart_module_canonical_mode(uart_module_t* cfx, bool state) {
     if (cfx == NULL) {
         return UART_MODULE_ARG_NULL_ERROR;
     }
@@ -186,4 +215,30 @@ uart_module_status_t uart_module_output_modes(uart_module_t* cfx, bool state) {
     }
     return UART_MODULE_OK;
 }
+
+uart_module_status_t uart_module_vmin_vtime(uart_module_t* cfx, uint8_t vmin, uint8_t vtime) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    cfx->m_termios.c_cc[VMIN] = vmin;
+    cfx->m_termios.c_cc[VTIME] = vtime;
+
+    return UART_MODULE_OK;
+}
+
+uart_module_status_t uart_module_set_baudrate(uart_module_t* cfx, uart_baudrate_t baud) {
+    if (cfx == NULL) {
+        return UART_MODULE_ARG_NULL_ERROR;
+    }
+    cfx->input_buadrate = baud;
+    cfx->output_buadrate = baud;
+    if (cfsetispeed(&cfx->m_termios, cfx->input_buadrate) != 0) {
+        return UART_MOUDLE_SETTING_BAUD_ERROR;
+    }
+    if (cfsetospeed(&cfx->m_termios, cfx->output_buadrate) != 0) {
+        return UART_MOUDLE_SETTING_BAUD_ERROR;
+    }
+    return UART_MODULE_OK;
+}
+
 
